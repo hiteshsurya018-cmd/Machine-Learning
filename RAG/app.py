@@ -6,8 +6,6 @@ from langchain_core.documents import Document
 from rag_pipeline import (
     DEFAULT_CHUNK_OVERLAP,
     DEFAULT_CHUNK_SIZE,
-    DEFAULT_EMBEDDING_MODEL,
-    DEFAULT_GENERATION_MODEL,
     DEFAULT_TOP_K,
     RAGPipeline,
 )
@@ -76,15 +74,11 @@ def get_pipeline(
     chunk_size: int,
     chunk_overlap: int,
     top_k: int,
-    embedding_model_name: str,
-    generation_model_name: str,
 ) -> RAGPipeline:
     return RAGPipeline(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         top_k=top_k,
-        embedding_model_name=embedding_model_name,
-        generation_model_name=generation_model_name,
     )
 
 
@@ -162,18 +156,6 @@ def main() -> None:
     )
 
     with st.sidebar:
-        st.header("Model Configuration")
-        generation_model_name = st.text_input(
-            "Generation model",
-            value=DEFAULT_GENERATION_MODEL,
-            help="Local model used by the LangChain RetrievalQA chain.",
-        )
-        embedding_model_name = st.text_input(
-            "Embedding model",
-            value=DEFAULT_EMBEDDING_MODEL,
-            help="Sentence embedding model used to index document chunks in FAISS.",
-        )
-
         st.header("Retrieval Configuration")
         chunk_size = st.slider(
             "Chunk size",
@@ -240,8 +222,6 @@ def main() -> None:
         chunk_size,
         chunk_overlap,
         top_k,
-        embedding_model_name,
-        generation_model_name,
     )
 
     try:
@@ -264,10 +244,6 @@ def main() -> None:
     metric_col1.metric("Pages loaded", ingestion_info["num_pages"])
     metric_col2.metric("Chunks created", ingestion_info["num_chunks"])
     metric_col3.metric("Top-k retrieved", top_k)
-    st.caption(
-        f"Embedding model: {ingestion_info['embedding_model']} | "
-        f"Generation model: {ingestion_info['generation_model']}"
-    )
 
     st.subheader("Final Answer")
     st.markdown(
