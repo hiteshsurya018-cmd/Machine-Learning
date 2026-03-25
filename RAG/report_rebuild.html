@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAG Final Report</title>
+  <style>
+    :root {
+      --ink: #18212b;
+      --muted: #526171;
+      --line: #ccd5df;
+      --panel: #f4f7fa;
+      --accent: #0d5c63;
+      --accent-soft: #dfeff0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Georgia", "Times New Roman", serif;
+      color: var(--ink);
+      background: white;
+      line-height: 1.45;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 18mm 16mm;
+      page-break-after: always;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 10px;
+      line-height: 1.2;
+    }
+
+    h1 {
+      font-size: 28px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    h2 {
+      margin-top: 24px;
+      padding-bottom: 6px;
+      font-size: 19px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h3 {
+      margin-top: 18px;
+      font-size: 15px;
+    }
+
+    p {
+      margin: 0 0 10px;
+      text-align: justify;
+    }
+
+    ul {
+      margin: 0 0 12px 18px;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 255mm;
+      border: 2px solid var(--ink);
+      padding: 20mm 16mm;
+    }
+
+    .cover .subtitle {
+      margin-top: 12px;
+      font-size: 18px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .cover .meta {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      font-size: 15px;
+    }
+
+    .lead-box {
+      margin: 16px 0 18px;
+      padding: 14px 16px;
+      background: var(--panel);
+      border-left: 5px solid var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 14px 0 16px;
+    }
+
+    .card {
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .label {
+      display: inline-block;
+      margin-bottom: 6px;
+      padding: 3px 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 14px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: var(--panel);
+    }
+
+    .flow {
+      margin: 14px 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #fafcfd 0%, #eef4f7 100%);
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .flow span {
+      display: inline-block;
+      margin: 6px 8px;
+      padding: 8px 10px;
+      border: 1px solid #b7c7d7;
+      background: white;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    code {
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 13px;
+    }
+
+    pre {
+      margin: 10px 0 14px;
+      padding: 12px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .shot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0 16px;
+    }
+
+    .shot {
+      min-height: 145px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: #fbfdff;
+    }
+
+    .shot strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .shot img {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin-top: 10px;
+      border: 1px solid #d7e0ea;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <section class="page">
+    <div class="cover">
+      <h1>Retrieval-Augmented Generation Based Document Question Answering System</h1>
+      <div class="subtitle">Final Project Report</div>
+      <div class="meta">
+        <p><strong>Project Title:</strong> Paracetamol Document QA with RAG</p>
+        <p><strong>Application Type:</strong> PDF Question Answering using Retrieval-Augmented Generation</p>
+        <p><strong>Core Stack:</strong> Streamlit, LangChain, Hugging Face Embeddings, FAISS, Transformers</p>
+        <p><strong>Prepared For:</strong> Academic project submission</p>
+        <p><strong>Date:</strong> March 10, 2026</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2>Abstract</h2>
+    <p>
+      This project presents a Retrieval-Augmented Generation (RAG) based question answering
+      system designed for querying a PDF document about Paracetamol. Traditional question
+      answering systems often hallucinate or respond from general model memory without grounding
+      the answer in the source material. To address this, the proposed system combines semantic
+      retrieval and local language generation so that answers are produced only from the document
+      context selected at runtime.
+    </p>
+    <p>
+      The application accepts a PDF file through a Streamlit interface, extracts text using a PDF
+      loader, splits the content into overlapping chunks, transforms the chunks into embeddings
+      using <code>sentence-transformers/all-MiniLM-L6-v2</code>, and stores the embeddings in a
+      FAISS vector index. When the user enters a question, the system retrieves the top relevant
+      chunks and passes them to a LangChain <code>RetrievalQA</code> chain backed by a local
+      sequence-to-sequence model, <code>google/flan-t5-base</code>, to generate a grounded answer.
+    </p>
+    <p>
+      The implemented system supports configurable chunk size, chunk overlap, and retrieval depth,
+      and also displays the retrieved chunks, source chunks, and similarity scores for
+      transparency. The result is a compact, explainable, and domain-focused document question
+      answering pipeline suitable for educational and informational use.
+    </p>
+
+    <h2>Introduction</h2>
+    <p>
+      Large language models are effective at generating natural language responses, but their
+      answers are not always anchored to a trusted source. In document-centric tasks, especially
+      when users need precise information from a particular file, retrieval becomes necessary.
+      Retrieval-Augmented Generation addresses this problem by first finding relevant context from
+      the source material and then generating an answer constrained to that context.
+    </p>
+    <p>
+      In this project, the target document is a PDF related to Paracetamol. The goal is to allow a
+      user to ask natural language questions such as the uses, dosage notes, warnings, or other
+      details described in the document, and receive answers derived from the uploaded file rather
+      than from unrestricted model memory.
+    </p>
+
+    <div class="lead-box">
+      The implemented system is intentionally grounded: if the answer is not present in the
+      retrieved context, the prompt instructs the model to respond that the answer is not known
+      from the provided document.
+    </div>
+
+    <h2>Problem Statement</h2>
+    <p>
+      Users often need a simple way to query long PDF documents without reading every page
+      manually. Keyword search is limited because it does not capture semantic similarity and may
+      miss relevant information expressed in different words. A domain-oriented question answering
+      system is therefore needed to retrieve semantically relevant content and produce readable
+      answers with supporting context.
+    </p>
+
+    <h2>Objectives</h2>
+    <ul>
+      <li>Build a PDF question answering application using a standard RAG pipeline.</li>
+      <li>Enable semantic retrieval over Paracetamol document content.</li>
+      <li>Generate answers using only retrieved context from the selected PDF.</li>
+      <li>Expose retrieved chunks and similarity scores for answer transparency.</li>
+      <li>Provide an easy-to-use web interface through Streamlit.</li>
+    </ul>
+  </section>
+
+  <section class="page">
+    <h2>System Architecture</h2>
+    <div class="flow">
+      <span>User Question</span>
+      <span>Streamlit UI</span>
+      <span>PDF Loader</span>
+      <span>Chunking</span>
+      <span>Embeddings</span>
+      <span>FAISS Retrieval</span>
+      <span>LLM Answer Generation</span>
+      <span>Answer + Source Chunks</span>
+    </div>
+
+    <h2>Technology Stack</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Technology Used</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Frontend</td>
+          <td>Streamlit</td>
+          <td>Interactive web interface for upload, question input, and results display</td>
+        </tr>
+        <tr>
+          <td>Document Loading</td>
+          <td>LangChain Community <code>PyPDFLoader</code></td>
+          <td>Extracts text content page by page from PDF documents</td>
+        </tr>
+        <tr>
+          <td>Chunking</td>
+          <td><code>RecursiveCharacterTextSplitter</code></td>
+          <td>Splits document text into overlapping semantic segments</td>
+        </tr>
+        <tr>
+          <td>Embeddings</td>
+          <td><code>sentence-transformers/all-MiniLM-L6-v2</code></td>
+          <td>Converts document chunks and queries into dense vector representations</td>
+        </tr>
+        <tr>
+          <td>Vector Store</td>
+          <td>FAISS</td>
+          <td>Stores and searches document embeddings efficiently</td>
+        </tr>
+        <tr>
+          <td>Generation Model</td>
+          <td><code>google/flan-t5-base</code></td>
+          <td>Produces final natural language answers from retrieved context</td>
+        </tr>
+        <tr>
+          <td>Orchestration</td>
+          <td>LangChain</td>
+          <td>Connects retriever, prompt, and local language model into one QA chain</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Project Structure</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Role in the Project</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>app.py</code></td>
+          <td>Streamlit interface, configuration controls, question handling, and output rendering</td>
+        </tr>
+        <tr>
+          <td><code>rag_pipeline.py</code></td>
+          <td>Core RAG logic including loading, chunking, embedding, indexing, retrieval, and answer generation</td>
+        </tr>
+        <tr>
+          <td><code>utils.py</code></td>
+          <td>Helper functions for file handling, chunk formatting, document identity, and duplicate removal</td>
+        </tr>
+        <tr>
+          <td><code>data/paracetamol.pdf</code></td>
+          <td>Default knowledge source used when no new PDF is uploaded</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="grid">
+      <div class="card">
+        <div class="label">Default Retrieval Setup</div>
+        <p><strong>Chunk Size:</strong> 600</p>
+        <p><strong>Chunk Overlap:</strong> 80</p>
+        <p><strong>Top-k Retrieval:</strong> 3 chunks</p>
+      </div>
+      <div class="card">
+        <div class="label">Model Setup</div>
+        <p><strong>Embedding Model:</strong> all-MiniLM-L6-v2</p>
+        <p><strong>Generator:</strong> flan-t5-base</p>
+        <p><strong>Execution:</strong> Local CPU-based inference</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2>Methodology and Implementation</h2>
+
+    <h3>1. PDF Ingestion</h3>
+    <p>
+      The system accepts either an uploaded PDF or a default file located at
+      <code>data/paracetamol.pdf</code>. The PDF is loaded through
+      <code>PyPDFLoader</code>, which creates page-level documents. The total page count is stored
+      and later displayed in the interface as part of ingestion metrics.
+    </p>
+
+    <h3>2. Chunking Strategy</h3>
+    <p>
+      After loading, the text is split using <code>RecursiveCharacterTextSplitter</code> with a
+      default chunk size of 600 characters and overlap of 80 characters. The splitter prioritizes
+      separators in the order of paragraph breaks, line breaks, sentence endings, spaces, and
+      finally character-level fallback. This preserves meaning while limiting context loss at chunk
+      boundaries.
+    </p>
+    <p>
+      The chosen chunking values balance retrieval accuracy and contextual completeness. Larger
+      chunks preserve enough surrounding medical explanation, while overlap ensures that boundary
+      facts are not dropped when text spans adjacent chunks.
+    </p>
+
+    <h3>3. Embedding Generation</h3>
+    <p>
+      Each chunk is converted into a dense vector representation using the Hugging Face embedding
+      model <code>sentence-transformers/all-MiniLM-L6-v2</code>. Query text is embedded in the
+      same vector space, allowing semantic comparison between user questions and document content.
+      Embedding normalization is enabled so similarity comparisons remain stable during retrieval.
+    </p>
+
+    <h3>4. Vector Indexing with FAISS</h3>
+    <p>
+      The embedded chunks are indexed using FAISS. A new FAISS index is built whenever the active
+      document or retrieval configuration changes. This index acts as the retriever backend and
+      returns the top-k most relevant chunks for each user question.
+    </p>
+
+    <h3>5. Answer Generation</h3>
+    <p>
+      For answer generation, the project defines a custom LangChain-compatible class,
+      <code>LocalSeq2SeqLLM</code>, which wraps a local Transformers sequence-to-sequence model.
+      The chosen model is <code>google/flan-t5-base</code>. The QA chain uses a prompt that
+      explicitly restricts the model to the retrieved context and instructs it to admit when the
+      answer is absent from the document.
+    </p>
+
+    <h3>6. Retrieval and Transparency</h3>
+    <p>
+      The pipeline performs a direct similarity search against FAISS and converts raw distances
+      into a readable similarity-style score using <code>1 / (1 + score)</code>. The interface then
+      displays the retrieved chunks, their page metadata, and the source chunks returned by the QA
+      chain. This makes the system more interpretable than a plain black-box answer generator.
+    </p>
+
+    <h2>User Interface Features</h2>
+    <ul>
+      <li>PDF uploader for custom documents.</li>
+      <li>Fallback to a default Paracetamol PDF.</li>
+      <li>Sidebar controls for embedding model, generation model, chunk size, overlap, and top-k.</li>
+      <li>Question input and single-click answer generation.</li>
+      <li>Metrics display for page count, chunk count, and retrieval depth.</li>
+      <li>Separate sections for final answer, retrieved chunks, and source chunks used for answering.</li>
+    </ul>
+
+    <h2>Key Source Code Highlights</h2>
+    <h3>Streamlit Entry Point: <code>app.py</code></h3>
+    <pre><code>@st.cache_resource(show_spinner=False)
+def get_pipeline(
+    chunk_size: int,
+    chunk_overlap: int,
+    top_k: int,
+    embedding_model_name: str,
+    generation_model_name: str,
+) -> RAGPipeline:
+    return RAGPipeline(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        top_k=top_k,
+        embedding_model_name=embedding_model_name,
+        generation_model_name=generation_model_name,
+    )</code></pre>
+
+    <h3>Chunking and FAISS Indexing: <code>rag_pipeline.py</code></h3>
+    <pre><code>splitter = RecursiveCharacterTextSplitter(
+    chunk_size=self.chunk_size,
+    chunk_overlap=self.chunk_overlap,
+    separators=["\n\n", "\n", ". ", " ", ""],
+)
+chunks = splitter.split_documents(documents)
+self.vectorstore = FAISS.from_documents(chunks, self.embeddings)</code></pre>
+
+    <h3>Answer Generation with RetrievalQA</h3>
+    <pre><code>self.qa_chain = RetrievalQA.from_chain_type(
+    llm=self.llm,
+    chain_type="stuff",
+    retriever=retriever,
+    return_source_documents=True,
+    chain_type_kwargs={"prompt": self._build_prompt()},
+)</code></pre>
+  </section>
+
+  <section class="page">
+    <h2>Working Flow of the System</h2>
+    <ol>
+      <li>The user uploads a PDF or uses the default Paracetamol document.</li>
+      <li>The PDF is parsed into page-level text documents.</li>
+      <li>The text is split into overlapping chunks.</li>
+      <li>All chunks are embedded and stored in a FAISS vector index.</li>
+      <li>The user asks a natural language question.</li>
+      <li>The question is embedded and matched against the vector index.</li>
+      <li>The top relevant chunks are retrieved.</li>
+      <li>The prompt combines those chunks with the user question.</li>
+      <li>The local language model generates a grounded answer.</li>
+      <li>The system displays the answer and the supporting chunks.</li>
+    </ol>
+
+    <h2>Key Implementation Decisions</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Decision</th>
+          <th>Rationale</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Use of local generation model</td>
+          <td>Reduces dependence on external APIs and keeps the project self-contained.</td>
+        </tr>
+        <tr>
+          <td>Use of MiniLM embeddings</td>
+          <td>Provides strong semantic retrieval quality with a lightweight model size.</td>
+        </tr>
+        <tr>
+          <td>Use of FAISS</td>
+          <td>Enables fast similarity search over document chunks.</td>
+        </tr>
+        <tr>
+          <td>Grounded prompt design</td>
+          <td>Helps minimize hallucinated answers outside the given PDF context.</td>
+        </tr>
+        <tr>
+          <td>Cached pipeline object in Streamlit</td>
+          <td>Avoids unnecessary reinitialization and repeated indexing on every question.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Observations and Results</h2>
+    <p>
+      The completed system demonstrates that a compact RAG pipeline can answer domain-specific
+      questions from a PDF more reliably than unrestricted generation alone. Because answers are
+      formed after semantic retrieval, the output remains tied to the content of the chosen
+      document. The display of retrieved chunks and source chunks also improves user trust by
+      showing the basis of the answer.
+    </p>
+    <p>
+      The application is especially suitable for short to medium-length reference documents where
+      users need fast access to factual content such as usage instructions, dosage notes, warnings,
+      or definitions. The configurable retrieval settings also make the project useful for
+      experimentation and learning.
+    </p>
+
+    <h2>Output Screenshots</h2>
+    <p>
+      The following screenshots were captured from the running Streamlit application. They confirm
+      that the interface, question submission flow, and retrieval output are functioning in the
+      implemented system.
+    </p>
+
+    <div class="shot-grid">
+      <div class="shot">
+        <strong>Screenshot 1: Home Interface</strong>
+        Initial application screen with the title, uploader, question field, and sidebar
+        configuration controls.
+        <img src="Home Page.jpg" alt="Home page screenshot" />
+      </div>
+      <div class="shot">
+        <strong>Screenshot 2: Question Submission View</strong>
+        Application state after entering a query for the Paracetamol document question answering
+        workflow.
+        <img src="Question.jpg" alt="Question input screenshot" />
+      </div>
+      <div class="shot">
+        <strong>Screenshot 3: Retrieved Chunks</strong>
+        Retrieved chunk output with evidence cards, page references, and similarity scores
+        displayed to the user.
+        <img src="Chunks.jpg" alt="Retrieved chunks screenshot" />
+      </div>
+    </div>
+
+    <h2>Suggested Example Queries for Screenshot Capture</h2>
+    <ul>
+      <li><code>What is paracetamol used for?</code></li>
+      <li><code>What dosage information is mentioned for paracetamol?</code></li>
+      <li><code>What warnings or precautions are described in the document?</code></li>
+      <li><code>What side effects are mentioned in the PDF?</code></li>
+    </ul>
+
+    <h2>Limitations</h2>
+    <ul>
+      <li>The quality of answers depends on the quality and extractability of text from the PDF.</li>
+      <li>Very complex layouts, tables, or scanned pages may reduce extraction quality.</li>
+      <li>The final answer quality is bounded by the capability of the local generator model.</li>
+      <li>No quantitative evaluation benchmark is included in the current version.</li>
+    </ul>
+  </section>
+
+  <section class="page">
+    <h2>Conclusion</h2>
+    <p>
+      This project successfully implements a Retrieval-Augmented Generation based PDF question
+      answering system for Paracetamol-related content. The application combines document loading,
+      recursive chunking, semantic embeddings, FAISS-based retrieval, and local language generation
+      into one usable interface. The design meets the practical objective of allowing a user to ask
+      questions in natural language and receive grounded answers supported by retrieved source text.
+    </p>
+    <p>
+      Beyond the specific Paracetamol document, the architecture is reusable for many other
+      domain-focused document QA tasks. This makes the project a strong demonstration of how RAG
+      systems can improve factual reliability and usability in document intelligence workflows.
+    </p>
+
+    <h2>Future Scope</h2>
+    <ul>
+      <li>Add persistent vector storage so the index can be reused across sessions.</li>
+      <li>Support multiple uploaded documents and document selection.</li>
+      <li>Introduce evaluation sets for answer relevance and grounding accuracy.</li>
+      <li>Improve handling of scanned PDFs through OCR.</li>
+      <li>Add citation-style sentence references in the generated answer.</li>
+    </ul>
+
+    <h2>References</h2>
+    <ul>
+      <li>LangChain documentation for retrieval chains and document loaders.</li>
+      <li>Hugging Face model documentation for sentence-transformers and FLAN-T5.</li>
+      <li>FAISS documentation for vector similarity search.</li>
+      <li>Streamlit documentation for Python-based data applications.</li>
+      <li>Project source files: <code>app.py</code>, <code>rag_pipeline.py</code>, and <code>utils.py</code>.</li>
+    </ul>
+
+    <p class="footer-note">
+      Report content aligned to the implementation present in the project workspace on March 10,
+      2026. No unsupported quantitative claims were added.
+    </p>
+  </section>
+</body>
+</html>
